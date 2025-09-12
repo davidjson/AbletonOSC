@@ -66,6 +66,7 @@ class SongHandler(AbletonOSCHandler):
             "session_record",
             "signature_denominator",
             "signature_numerator",
+            "start_time",  # The position in the Live Set where playing will start, in beats
             "tempo"
         ]
 

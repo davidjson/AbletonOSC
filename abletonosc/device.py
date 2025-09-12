@@ -140,3 +140,26 @@ class DeviceHandler(AbletonOSCHandler):
         self.osc_server.add_handler("/live/device/get/parameter/name", create_device_callback(device_get_parameter_name))
         self.osc_server.add_handler("/live/device/start_listen/parameter/value", create_device_callback(device_get_parameter_value_listener, include_ids = True))
         self.osc_server.add_handler("/live/device/stop_listen/parameter/value", create_device_callback(device_get_parameter_remove_value_listener, include_ids = True))
+
+        #--------------------------------------------------------------------------------
+        # Device.View: Properties for device view (collapsing devices)
+        #--------------------------------------------------------------------------------
+        def device_view_get_is_collapsed(device, params: Tuple[Any] = ()):
+            """Get whether the device is collapsed in the device chain"""
+            if hasattr(device, 'view') and hasattr(device.view, 'is_collapsed'):
+                return device.view.is_collapsed,
+            return 0,  # Default to not collapsed if not available
+        
+        def device_view_set_is_collapsed(device, params: Tuple[Any] = ()):
+            """Set whether the device is collapsed in the device chain"""
+            collapsed = int(params[0]) if params else 1
+            if hasattr(device, 'view') and hasattr(device.view, 'is_collapsed'):
+                device.view.is_collapsed = collapsed
+                self.logger.info(f"Set device.view.is_collapsed to {collapsed}")
+                return collapsed,
+            else:
+                self.logger.warning("Device.view.is_collapsed not available")
+                return None
+
+        self.osc_server.add_handler("/live/device/view/get/is_collapsed", create_device_callback(device_view_get_is_collapsed))
+        self.osc_server.add_handler("/live/device/view/set/is_collapsed", create_device_callback(device_view_set_is_collapsed))
